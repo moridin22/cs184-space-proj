@@ -1,0 +1,8 @@
+*.swp
+tests
+out
+*.pyc
+*.lprof
+*.prof
+texturework/
+textures/bgedit.png
