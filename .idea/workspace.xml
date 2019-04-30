@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0fb3eb20-31a3-4952-9179-b0675cd585c5" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scenes/testing.scene" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scenes/testing.scene" afterPath="$PROJECT_DIR$/scenes/testing.scene" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tracer.py" afterPath="$PROJECT_DIR$/tracer.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -15,16 +14,16 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="tracer.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="tracer.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tracer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="460">
-              <caret line="861" column="29" lean-forward="false" selection-start-line="860" selection-start-column="29" selection-end-line="861" selection-end-column="29" />
+            <state relative-caret-position="281">
+              <caret line="231" column="4" lean-forward="false" selection-start-line="231" selection-start-column="4" selection-end-line="231" selection-end-column="4" />
               <folding>
-                <element signature="e#4147#5075#0" expanded="false" />
-                <element signature="e#5131#5246#0" expanded="false" />
-                <element signature="e#5936#6052#0" expanded="false" />
-                <element signature="e#20659#24650#0" expanded="false" />
+                <element signature="e#4117#5045#0" expanded="false" />
+                <element signature="e#5101#5216#0" expanded="false" />
+                <element signature="e#5906#6022#0" expanded="false" />
+                <element signature="e#20591#24582#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -50,11 +49,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="testing.scene" pinned="false" current-in-tab="false">
+      <file leaf-file-name="testing.scene" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scenes/testing.scene">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="9" column="14" lean-forward="true" selection-start-line="9" selection-start-column="14" selection-end-line="9" selection-end-column="14" />
+            <state relative-caret-position="465">
+              <caret line="31" column="26" lean-forward="false" selection-start-line="31" selection-start-column="26" selection-end-line="31" selection-end-column="26" />
               <folding />
             </state>
           </provider>
@@ -115,12 +114,12 @@
       <find>ones</find>
       <find>DT_TEXTU</find>
       <find>CENTERS</find>
-      <find>norm</find>
       <find>diskte</find>
       <find>SKY_TEXTURE_INT</find>
       <find>colpoint</find>
       <find>pointsqr</find>
       <find>sky</find>
+      <find>norm</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -129,8 +128,8 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/scenes/testing.scene" />
         <option value="$PROJECT_DIR$/tracer.py" />
+        <option value="$PROJECT_DIR$/scenes/testing.scene" />
       </list>
     </option>
   </component>
@@ -320,24 +319,24 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scenes/testing.scene">
+    <entry file="file://$PROJECT_DIR$/tracer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="14" lean-forward="true" selection-start-line="9" selection-start-column="14" selection-end-line="9" selection-end-column="14" />
-          <folding />
+        <state relative-caret-position="281">
+          <caret line="231" column="4" lean-forward="false" selection-start-line="231" selection-start-column="4" selection-end-line="231" selection-end-column="4" />
+          <folding>
+            <element signature="e#4117#5045#0" expanded="false" />
+            <element signature="e#5101#5216#0" expanded="false" />
+            <element signature="e#5906#6022#0" expanded="false" />
+            <element signature="e#20591#24582#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tracer.py">
+    <entry file="file://$PROJECT_DIR$/scenes/testing.scene">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="460">
-          <caret line="861" column="29" lean-forward="false" selection-start-line="860" selection-start-column="29" selection-end-line="861" selection-end-column="29" />
-          <folding>
-            <element signature="e#4147#5075#0" expanded="false" />
-            <element signature="e#5131#5246#0" expanded="false" />
-            <element signature="e#5936#6052#0" expanded="false" />
-            <element signature="e#20659#24650#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="465">
+          <caret line="31" column="26" lean-forward="false" selection-start-line="31" selection-start-column="26" selection-end-line="31" selection-end-column="26" />
+          <folding />
         </state>
       </provider>
     </entry>

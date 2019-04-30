@@ -123,7 +123,6 @@ defaults = {
             "sRGBOut":"1",
             "Diskintensitydo":"1",
             "sRGBIn":"1",
-            "Num_bodies":"1",
             "Centers":"0.,0.,0."
             }
 
@@ -231,7 +230,6 @@ except (KeyError, configparser.NoSectionError):
     logger.debug("using defaults.")
 
 try:
-    NUM_BODIES = cfp.get('bodies', 'Num_bodies')
     CENTERS = [[float (x) for x in center.split(',')] for center in cfp.get('bodies', 'Centers').split(';')]
 except (configparser.NoSectionError):
     CENTERS = [0.0,0.0,0.0]
@@ -445,7 +443,7 @@ def RK4f(y,h2):
     f = np.zeros(y.shape)
     f[:,0:3] = y[:,3:6]
     for center in CENTERS:
-        f[:,3:6] += - 1.5 * h2 * y[:,0:3] / np.power(sqrnorm(y[:,0:3] - center),2.5)[:,np.newaxis]
+        f[:,3:6] += - 1.5 * h2 * (y[:,0:3] - center) / np.power(sqrnorm(y[:,0:3] - center),2.5)[:,np.newaxis]
     return f
 
 

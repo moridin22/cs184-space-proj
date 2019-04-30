@@ -29,5 +29,4 @@ Blurdo=0
 
 [bodies]
 
-Num_bodies=1
-Centers=3.,0.,0.
+Centers=3.,0.,0.;-3.,0.,0.
