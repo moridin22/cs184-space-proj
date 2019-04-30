@@ -230,7 +230,7 @@ except (KeyError, configparser.NoSectionError):
     logger.debug("using defaults.")
 
 try:
-    CENTERS = [[float (x) for x in center.split(',')] for center in cfp.get('bodies', 'Centers').split(';')]
+    CENTERS = [np.array([float (x) for x in center.split(',')]) for center in cfp.get('bodies', 'Centers').split(';')]
 except (configparser.NoSectionError):
     CENTERS = [0.0,0.0,0.0]
 
@@ -443,7 +443,9 @@ def RK4f(y,h2):
     f = np.zeros(y.shape)
     f[:,0:3] = y[:,3:6]
     for center in CENTERS:
+        h2 = sqrnorm(np.cross(y[:,0:3] - center,y[:,3:6]))[:,np.newaxis]
         f[:,3:6] += - 1.5 * h2 * (y[:,0:3] - center) / np.power(sqrnorm(y[:,0:3] - center),2.5)[:,np.newaxis]
+
     return f
 
 
@@ -688,6 +690,7 @@ def raytrace_schedule(i,schedule,total_shared,q): # this is the function running
 
         #squared angular momentum per unit mass (in the "Newtonian fantasy")
         #h2 = np.outer(sqrnorm(np.cross(point,velocity)),np.array([1.,1.,1.]))
+
         com = np.zeros(3)
         for center in CENTERS:
             com += center
