@@ -123,6 +123,8 @@ defaults = {
             "sRGBOut":"1",
             "Diskintensitydo":"1",
             "sRGBIn":"1",
+            "Num_bodies":"1",
+            "Centers":"0.,0.,0."
             }
 
 cfp = configparser.ConfigParser(defaults)
@@ -228,6 +230,11 @@ except (KeyError, configparser.NoSectionError):
     logger.debug("error reading scene file: insufficient data in materials section")
     logger.debug("using defaults.")
 
+try:
+    NUM_BODIES = cfp.get('bodies', 'Num_bodies')
+    CENTERS = [[float (x) for x in center.split(',')] for center in cfp.get('bodies', 'Centers').split(';')]
+except (configparser.NoSectionError):
+    CENTERS = [0.0,0.0,0.0]
 
 # converting mode strings to mode ints
 try:
@@ -400,6 +407,8 @@ logger.debug("Generated %d pixel flattened array.", numPixels)
 ones = np.ones((numPixels))
 ones3 = np.ones((numPixels,3))
 UPFIELD = np.outer(ones,np.array([0.,1.,0.]))
+origin = np.zeros(3)
+origin3 = np.zeros((numPixels,3))
 
 #random sample of floats
 ransample = np.random.random_sample((numPixels))
@@ -435,7 +444,8 @@ def sixth(v):
 def RK4f(y,h2):
     f = np.zeros(y.shape)
     f[:,0:3] = y[:,3:6]
-    f[:,3:6] = - 1.5 * h2 * y[:,0:3] / np.power(sqrnorm(y[:,0:3]),2.5)[:,np.newaxis]
+    for center in CENTERS:
+        f[:,3:6] += - 1.5 * h2 * y[:,0:3] / np.power(sqrnorm(y[:,0:3] - center),2.5)[:,np.newaxis]
     return f
 
 
@@ -680,7 +690,11 @@ def raytrace_schedule(i,schedule,total_shared,q): # this is the function running
 
         #squared angular momentum per unit mass (in the "Newtonian fantasy")
         #h2 = np.outer(sqrnorm(np.cross(point,velocity)),np.array([1.,1.,1.]))
-        h2 = sqrnorm(np.cross(point,velocity))[:,np.newaxis]
+        com = np.zeros(3)
+        for center in CENTERS:
+            com += center
+        com /= len(CENTERS)
+        h2 = sqrnorm(np.cross(point - com,velocity))[:,np.newaxis]
 
         pointsqr = np.copy(ones3)
 
@@ -696,6 +710,7 @@ def raytrace_schedule(i,schedule,total_shared,q): # this is the function running
             oldpoint = np.copy(point) #not needed for tracing. Useful for intersections
 
             if METHOD == METH_LEAPFROG:
+                # TODO Not updated for multiple bodies
                 #leapfrog method here feels good
                 point += velocity * STEP
 
@@ -724,128 +739,127 @@ def raytrace_schedule(i,schedule,total_shared,q): # this is the function running
 
                 point += increment[:,0:3]
 
-
-            #useful precalcs
-            pointsqr = sqrnorm(point)
-            #phi = np.arctan2(point[:,0],point[:,2])    #too heavy. Better an instance wherever it's needed.
-            #normvel = normalize(velocity)              #never used! BAD BAD BAD!!
-
-
-            # FOG
-
-            if FOGDO and (it%FOGSKIP == 0):
-                phsphtaper = np.clip(0.8*(pointsqr - 1.0),0.,1.0)
-                fogint = np.clip(FOGMULT * FOGSKIP * STEP / pointsqr,0.0,1.0) * phsphtaper
-                fogcol = ones3
-
-                object_colour = blendcolors(fogcol,fogint,object_colour,object_alpha)
-                object_alpha = blendalpha(fogint, object_alpha)
+            for center in CENTERS:
+                #useful precalcs
+                pointsqr = sqrnorm(point - center)
+                #phi = np.arctan2(point[:,0],point[:,2])    #too heavy. Better an instance wherever it's needed.
+                #normvel = normalize(velocity)              #never used! BAD BAD BAD!!
 
 
-            # CHECK COLLISIONS
-            # accretion disk
+                # FOG
 
-            if DISK_TEXTURE_INT != DT_NONE:
+                if FOGDO and (it%FOGSKIP == 0):
+                    phsphtaper = np.clip(0.8*(pointsqr - 1.0),0.,1.0)
+                    fogint = np.clip(FOGMULT * FOGSKIP * STEP / pointsqr,0.0,1.0) * phsphtaper
+                    fogcol = ones3
 
-                mask_crossing = np.logical_xor( oldpoint[:,1] > 0., point[:,1] > 0.) #whether it just crossed the horizontal plane
-                mask_distance = np.logical_and((pointsqr < DISKOUTERSQR), (pointsqr > DISKINNERSQR))  #whether it's close enough
+                    object_colour = blendcolors(fogcol,fogint,object_colour,object_alpha)
+                    object_alpha = blendalpha(fogint, object_alpha)
 
-                diskmask = np.logical_and(mask_crossing,mask_distance)
 
-                if (diskmask.any()):
-                    
-                    #actual collision point by intersection
-                    lambdaa = - point[:,1]/velocity[:,1]
-                    colpoint = point + lambdaa[:,np.newaxis] * velocity
-                    colpointsqr = sqrnorm(colpoint)
+                # CHECK COLLISIONS
+                # accretion disk
+                # TODO not implemented for multiple objects
 
-                    if DISK_TEXTURE_INT == DT_GRID:
+                if DISK_TEXTURE_INT != DT_NONE:
+
+                    mask_crossing = np.logical_xor( oldpoint[:,1] > 0., point[:,1] > 0.) #whether it just crossed the horizontal plane
+                    mask_distance = np.logical_and((pointsqr < DISKOUTERSQR), (pointsqr > DISKINNERSQR))  #whether it's close enough
+
+                    diskmask = np.logical_and(mask_crossing,mask_distance)
+
+                    if (diskmask.any()):
+
+                        #actual collision point by intersection
+                        lambdaa = - point[:,1]/velocity[:,1]
+                        colpoint = point + lambdaa[:,np.newaxis] * velocity
+                        colpointsqr = sqrnorm(colpoint)
+
+                        if DISK_TEXTURE_INT == DT_GRID:
+                            phi = np.arctan2(colpoint[:,0],point[:,2])
+                            theta = np.arctan2(colpoint[:,1],norm(point[:,[0,2]]))
+                            diskcolor =     np.outer(
+                                    np.mod(phi,0.52359) < 0.261799,
+                                                np.array([1.,1.,0.])
+                                                    ) +  \
+                                            np.outer(ones,np.array([0.,0.,1.]) )
+                            diskalpha = diskmask
+
+                        elif DISK_TEXTURE_INT == DT_SOLID:
+                            diskcolor = np.array([1.,1.,.98])
+                            diskalpha = diskmask
+
+                        elif DISK_TEXTURE_INT == DT_TEXTURE:
+
+                            phi = np.arctan2(colpoint[:,0],point[:,2])
+
+                            uv = np.zeros((numChunk,2))
+
+                            uv[:,0] = ((phi+2*np.pi)%(2*np.pi))/(2*np.pi)
+                            uv[:,1] = (np.sqrt(colpointsqr)-DISKINNER)/(DISKOUTER-DISKINNER)
+
+                            diskcolor = lookup ( texarr_disk, np.clip(uv,0.,1.))
+                            #alphamask = (2.0*ransample) < sqrnorm(diskcolor)
+                            #diskmask = np.logical_and(diskmask, alphamask )
+                            diskalpha = diskmask * np.clip(sqrnorm(diskcolor)/3.0,0.0,1.0)
+
+                        elif DISK_TEXTURE_INT == DT_BLACKBODY:
+
+                            temperature = np.exp(bb.disktemp(colpointsqr,9.2103))
+
+                            if REDSHIFT:
+                                R = np.sqrt(colpointsqr)
+
+                                disc_velocity = 0.70710678 * \
+                                            np.power((np.sqrt(colpointsqr)-1.).clip(0.1),-.5)[:,np.newaxis] * \
+                                            np.cross(UPFIELD, normalize(colpoint))
+
+
+                                gamma =  np.power( 1 - sqrnorm(disc_velocity).clip(max=.99), -.5)
+
+                                # opz = 1 + z
+                                opz_doppler = gamma * ( 1. + np.einsum('ij,ij->i',disc_velocity,normalize(velocity)))
+                                opz_gravitational = np.power(1.- 1/R.clip(1),-.5)
+
+                                # (1+z)-redshifted Planck spectrum is still Planckian at temperature T
+                                temperature /= (opz_doppler*opz_gravitational).clip(0.1)
+
+                            intensity = bb.intensity(temperature)
+                            if DISK_INTENSITY_DO:
+                                diskcolor = np.einsum('ij,i->ij', bb.colour(temperature),DISK_MULTIPLIER*intensity)#np.maximum(1.*ones,DISK_MULTIPLIER*intensity))
+                            else:
+                                diskcolor = bb.colour(temperature)
+
+                            iscotaper = np.clip((colpointsqr-DISKINNERSQR)*0.3,0.,1.)
+                            outertaper = np.clip(temperature/1000. ,0.,1.)
+
+                            diskalpha = diskmask * iscotaper * outertaper#np.clip(diskmask * DISK_ALPHA_MULTIPLIER *intensity,0.,1.)
+
+
+                        object_colour = blendcolors(diskcolor,diskalpha,object_colour,object_alpha)
+                        object_alpha = blendalpha(diskalpha, object_alpha)
+
+
+
+                # event horizon
+                oldpointsqr = sqrnorm(oldpoint - center)
+
+                mask_horizon = np.logical_and((pointsqr < 1),(oldpointsqr > 1) )
+
+                if mask_horizon.any() :
+                    if HORIZON_GRID:
+                        lambdaa = 1. - ((1. - oldpointsqr) / ((pointsqr - oldpointsqr)))[:, np.newaxis]
+                        colpoint = lambdaa * point + (1 - lambdaa) * oldpoint
                         phi = np.arctan2(colpoint[:,0],point[:,2])
                         theta = np.arctan2(colpoint[:,1],norm(point[:,[0,2]]))
-                        diskcolor =     np.outer(
-                                np.mod(phi,0.52359) < 0.261799,
-                                            np.array([1.,1.,0.])
-                                                ) +  \
-                                        np.outer(ones,np.array([0.,0.,1.]) )
-                        diskalpha = diskmask
+                        horizoncolour = np.outer( np.logical_xor(np.mod(phi,1.04719) < 0.52359,np.mod(theta,1.04719) < 0.52359), np.array([1.,0.,0.]))
+                    else:
+                        horizoncolour = BLACK#np.zeros((numPixels,3))
 
-                    elif DISK_TEXTURE_INT == DT_SOLID:
-                        diskcolor = np.array([1.,1.,.98])
-                        diskalpha = diskmask
+                    horizonalpha = mask_horizon
 
-                    elif DISK_TEXTURE_INT == DT_TEXTURE:
-
-                        phi = np.arctan2(colpoint[:,0],point[:,2])
-                        
-                        uv = np.zeros((numChunk,2))
-
-                        uv[:,0] = ((phi+2*np.pi)%(2*np.pi))/(2*np.pi)
-                        uv[:,1] = (np.sqrt(colpointsqr)-DISKINNER)/(DISKOUTER-DISKINNER)
-
-                        diskcolor = lookup ( texarr_disk, np.clip(uv,0.,1.))
-                        #alphamask = (2.0*ransample) < sqrnorm(diskcolor)
-                        #diskmask = np.logical_and(diskmask, alphamask )
-                        diskalpha = diskmask * np.clip(sqrnorm(diskcolor)/3.0,0.0,1.0)
-
-                    elif DISK_TEXTURE_INT == DT_BLACKBODY:
-
-                        temperature = np.exp(bb.disktemp(colpointsqr,9.2103))
-
-                        if REDSHIFT:
-                            R = np.sqrt(colpointsqr)
-
-                            disc_velocity = 0.70710678 * \
-                                        np.power((np.sqrt(colpointsqr)-1.).clip(0.1),-.5)[:,np.newaxis] * \
-                                        np.cross(UPFIELD, normalize(colpoint))
-
-
-                            gamma =  np.power( 1 - sqrnorm(disc_velocity).clip(max=.99), -.5)
-
-                            # opz = 1 + z
-                            opz_doppler = gamma * ( 1. + np.einsum('ij,ij->i',disc_velocity,normalize(velocity)))
-                            opz_gravitational = np.power(1.- 1/R.clip(1),-.5)
-
-                            # (1+z)-redshifted Planck spectrum is still Planckian at temperature T
-                            temperature /= (opz_doppler*opz_gravitational).clip(0.1)
-
-                        intensity = bb.intensity(temperature)
-                        if DISK_INTENSITY_DO:
-                            diskcolor = np.einsum('ij,i->ij', bb.colour(temperature),DISK_MULTIPLIER*intensity)#np.maximum(1.*ones,DISK_MULTIPLIER*intensity))
-                        else:
-                            diskcolor = bb.colour(temperature)
-
-                        iscotaper = np.clip((colpointsqr-DISKINNERSQR)*0.3,0.,1.)
-                        outertaper = np.clip(temperature/1000. ,0.,1.)
-
-                        diskalpha = diskmask * iscotaper * outertaper#np.clip(diskmask * DISK_ALPHA_MULTIPLIER *intensity,0.,1.)
-
-
-                    object_colour = blendcolors(diskcolor,diskalpha,object_colour,object_alpha)
-                    object_alpha = blendalpha(diskalpha, object_alpha)
-
-
-
-            # event horizon
-            oldpointsqr = sqrnorm(oldpoint)
-
-            mask_horizon = np.logical_and((pointsqr < 1),(sqrnorm(oldpoint) > 1) )
-
-            if mask_horizon.any() :
-
-                lambdaa =  1. - ((1.-oldpointsqr)/((pointsqr - oldpointsqr)))[:,np.newaxis]
-                colpoint = lambdaa * point + (1-lambdaa)*oldpoint
-
-                if HORIZON_GRID:
-                    phi = np.arctan2(colpoint[:,0],point[:,2])
-                    theta = np.arctan2(colpoint[:,1],norm(point[:,[0,2]]))
-                    horizoncolour = np.outer( np.logical_xor(np.mod(phi,1.04719) < 0.52359,np.mod(theta,1.04719) < 0.52359), np.array([1.,0.,0.]))
-                else:
-                    horizoncolour = BLACK#np.zeros((numPixels,3))
-
-                horizonalpha = mask_horizon
-
-                object_colour = blendcolors(horizoncolour,horizonalpha,object_colour,object_alpha)
-                object_alpha = blendalpha(horizonalpha, object_alpha)
+                    object_colour = blendcolors(horizoncolour,horizonalpha,object_colour,object_alpha)
+                    object_alpha = blendalpha(horizonalpha, object_alpha)
 
 
 
