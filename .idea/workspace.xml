@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0fb3eb20-31a3-4952-9179-b0675cd585c5" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scenes/twoholesmars.scene" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scenes/sunbehind.scene" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/scenes/twoholes.scene" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scenes/testing.scene" afterPath="$PROJECT_DIR$/scenes/testing.scene" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scenes/twoholesmars.scene" afterPath="$PROJECT_DIR$/scenes/twoholesmars.scene" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tracer.py" afterPath="$PROJECT_DIR$/tracer.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -15,28 +16,28 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/cs184_space_proj$Testing.coverage" NAME="Testing Coverage Results" MODIFIED="1557459566460" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/cs184_space_proj$Testing.coverage" NAME="Testing Coverage Results" MODIFIED="1557509963293" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/cs184_space_proj$Testing_1_Thread.coverage" NAME="Testing 1 Thread Coverage Results" MODIFIED="1557430394454" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="tracer.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="tracer.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tracer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-4605">
-              <caret line="499" column="109" lean-forward="false" selection-start-line="499" selection-start-column="109" selection-end-line="499" selection-end-column="109" />
+            <state relative-caret-position="-3">
+              <caret line="754" column="27" lean-forward="false" selection-start-line="754" selection-start-column="27" selection-end-line="754" selection-end-column="27" />
               <folding>
                 <element signature="e#19#37#0" expanded="true" />
-                <element signature="e#4411#5339#0" expanded="false" />
-                <element signature="e#5395#5510#0" expanded="false" />
-                <element signature="e#6200#6316#0" expanded="false" />
-                <element signature="e#8104#9082#0" expanded="false" />
-                <element signature="e#9166#9397#0" expanded="false" />
-                <element signature="e#9458#9605#0" expanded="false" />
-                <element signature="e#14062#14349#0" expanded="false" />
-                <element signature="e#16113#17155#0" expanded="false" />
-                <element signature="e#17206#17339#0" expanded="false" />
-                <element signature="e#17382#17861#0" expanded="false" />
+                <element signature="e#4428#5356#0" expanded="false" />
+                <element signature="e#5412#5527#0" expanded="false" />
+                <element signature="e#6217#6333#0" expanded="false" />
+                <element signature="e#8254#9232#0" expanded="false" />
+                <element signature="e#9316#9547#0" expanded="false" />
+                <element signature="e#9608#9755#0" expanded="false" />
+                <element signature="e#14240#14527#0" expanded="false" />
+                <element signature="e#16291#17333#0" expanded="false" />
+                <element signature="e#17384#17517#0" expanded="false" />
+                <element signature="e#17560#18039#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -69,8 +70,28 @@
       <file leaf-file-name="twoholesmars.scene" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scenes/twoholesmars.scene">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="570">
-              <caret line="38" column="12" lean-forward="false" selection-start-line="38" selection-start-column="12" selection-end-line="38" selection-end-column="12" />
+            <state relative-caret-position="150">
+              <caret line="10" column="13" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="38" selection-end-column="12" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="twoholes.scene" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scenes/twoholes.scene">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="259">
+              <caret line="29" column="8" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="39" selection-end-column="12" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="sunbehind.scene" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/scenes/sunbehind.scene">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="289">
+              <caret line="31" column="8" lean-forward="true" selection-start-line="31" selection-start-column="8" selection-end-line="31" selection-end-column="8" />
               <folding />
             </state>
           </provider>
@@ -96,26 +117,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="simple.scene" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scenes/simple.scene">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="15" column="15" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="blackbody.scene" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scenes/blackbody.scene">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="20" column="9" lean-forward="false" selection-start-line="20" selection-start-column="9" selection-end-line="20" selection-end-column="9" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="bgedit.jpg" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/textures/bgedit.jpg">
           <provider selected="true" editor-type-id="images">
@@ -127,10 +128,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>pointsqr</find>
-      <find>ones</find>
-      <find>spectrum</find>
-      <find>bgedit</find>
       <find>sun</find>
       <find>Diskte</find>
       <find>imread</find>
@@ -157,6 +154,10 @@
       <find>upvec</find>
       <find>sleep(1</find>
       <find>h2</find>
+      <find>h23</find>
+      <find>rk4</find>
+      <find>blackbody</find>
+      <find>draw_cir</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -165,9 +166,11 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/scenes/twoholesmars.scene" />
         <option value="$PROJECT_DIR$/scenes/testing.scene" />
+        <option value="$PROJECT_DIR$/scenes/twoholesmars.scene" />
+        <option value="$PROJECT_DIR$/scenes/twoholes.scene" />
         <option value="$PROJECT_DIR$/tracer.py" />
+        <option value="$PROJECT_DIR$/scenes/sunbehind.scene" />
       </list>
     </option>
   </component>
@@ -310,7 +313,7 @@
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32992327" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32992327" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32992327" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32992327" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -357,7 +360,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/tracer.py</url>
-          <line>825</line>
+          <line>830</line>
         </line-breakpoint>
       </breakpoints>
       <option name="time" value="1" />
@@ -371,16 +374,16 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#19#37#0" expanded="true" />
-            <element signature="e#4411#5339#0" expanded="false" />
-            <element signature="e#5395#5510#0" expanded="false" />
-            <element signature="e#6200#6316#0" expanded="false" />
-            <element signature="e#8104#9082#0" expanded="false" />
-            <element signature="e#9166#9397#0" expanded="false" />
-            <element signature="e#9458#9605#0" expanded="false" />
-            <element signature="e#14062#14349#0" expanded="false" />
-            <element signature="e#16113#17155#0" expanded="false" />
-            <element signature="e#17206#17339#0" expanded="false" />
-            <element signature="e#17382#17861#0" expanded="false" />
+            <element signature="e#4428#5356#0" expanded="false" />
+            <element signature="e#5412#5527#0" expanded="false" />
+            <element signature="e#6217#6333#0" expanded="false" />
+            <element signature="e#8254#9232#0" expanded="false" />
+            <element signature="e#9316#9547#0" expanded="false" />
+            <element signature="e#9608#9755#0" expanded="false" />
+            <element signature="e#14240#14527#0" expanded="false" />
+            <element signature="e#16291#17333#0" expanded="false" />
+            <element signature="e#17384#17517#0" expanded="false" />
+            <element signature="e#17560#18039#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -517,9 +520,37 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scenes/twoholesmars.scene">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="38" column="12" lean-forward="false" selection-start-line="38" selection-start-column="12" selection-end-line="38" selection-end-column="12" />
+        <state relative-caret-position="150">
+          <caret line="10" column="13" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="38" selection-end-column="12" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scenes/twoholes.scene">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="259">
+          <caret line="29" column="8" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="39" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tracer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3">
+          <caret line="754" column="27" lean-forward="false" selection-start-line="754" selection-start-column="27" selection-end-line="754" selection-end-column="27" />
+          <folding>
+            <element signature="e#19#37#0" expanded="true" />
+            <element signature="e#4428#5356#0" expanded="false" />
+            <element signature="e#5412#5527#0" expanded="false" />
+            <element signature="e#6217#6333#0" expanded="false" />
+            <element signature="e#8254#9232#0" expanded="false" />
+            <element signature="e#9316#9547#0" expanded="false" />
+            <element signature="e#9608#9755#0" expanded="false" />
+            <element signature="e#14240#14527#0" expanded="false" />
+            <element signature="e#16291#17333#0" expanded="false" />
+            <element signature="e#17384#17517#0" expanded="false" />
+            <element signature="e#17560#18039#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -531,23 +562,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tracer.py">
+    <entry file="file://$PROJECT_DIR$/scenes/sunbehind.scene">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4605">
-          <caret line="499" column="109" lean-forward="false" selection-start-line="499" selection-start-column="109" selection-end-line="499" selection-end-column="109" />
-          <folding>
-            <element signature="e#19#37#0" expanded="true" />
-            <element signature="e#4411#5339#0" expanded="false" />
-            <element signature="e#5395#5510#0" expanded="false" />
-            <element signature="e#6200#6316#0" expanded="false" />
-            <element signature="e#8104#9082#0" expanded="false" />
-            <element signature="e#9166#9397#0" expanded="false" />
-            <element signature="e#9458#9605#0" expanded="false" />
-            <element signature="e#14062#14349#0" expanded="false" />
-            <element signature="e#16113#17155#0" expanded="false" />
-            <element signature="e#17206#17339#0" expanded="false" />
-            <element signature="e#17382#17861#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="289">
+          <caret line="31" column="8" lean-forward="true" selection-start-line="31" selection-start-column="8" selection-end-line="31" selection-end-column="8" />
+          <folding />
         </state>
       </provider>
     </entry>

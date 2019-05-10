@@ -1,6 +1,6 @@
 [lofi]
 
-Resolution=720,480
+Resolution=360,240
 Iterations=250
 Stepsize=0.08
 
@@ -12,7 +12,7 @@ Stepsize=0.08
 
 [geometry]
 
-Cameraposition=0.,3.,-13.
+Cameraposition=0.,0.,-13.
 Fieldofview=2.0
 Lookat=0.,0.,0.
 Upvector=-0.,1.,0.
@@ -22,7 +22,7 @@ Diskouter=4.
 [materials]
 
 Horizongrid=0
-Disktexture=texture
+Disktexture=none
 Skytexture=texture
 Skydiskratio=1.5
 Fogdo=0
@@ -32,8 +32,9 @@ Blurdo=0
 [bodies]
 
 # Use semicolons to separate the coordinates of each center
-Centers=4.,2.,0.;-5,-1.4,0
-Othercenter=2,-2,0
-Otherradius=1.5
-Othertexture=mars
-Drawcircle=0
+Centers=0,0,0
+Radii=1
+Othercenter=0,0,7
+Otherradius=4
+Othertexture=sun
+Drawcircle=1

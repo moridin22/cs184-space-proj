@@ -129,7 +129,8 @@ defaults = {
     "Othercenter":"0.,0.,0.",
     "Otherradius":"0.",
     "Othertexture":"none",
-    "Drawcircle":"0"
+    "Drawcircle":"0",
+    "Radii":"1"
             }
 
 cfp = configparser.ConfigParser(defaults)
@@ -249,10 +250,12 @@ except (KeyError, configparser.NoSectionError):
 
 try:
     CENTERS = [np.array([float (x) for x in center.split(',')]) for center in cfp.get('bodies', 'Centers').split(';')]
+    RADII = [float(x) for x in cfp.get('bodies','Radii').split(',')]
     OTHER_RADIUS = float(cfp.get('bodies','Otherradius'))
     OTHER_CENTER = np.array([float(x) for x in cfp.get('bodies', 'Othercenter').split(',')])
     OTHER_TEXTURE = cfp.get('bodies','Othertexture')
     DRAW_CIRCLE = int(cfp.get('bodies', 'Drawcircle'))
+
 except (configparser.NoSectionError):
     CENTERS = [np.zeros(3)]
     OTHER_CENTER = np.zeros(3)
@@ -260,6 +263,8 @@ except (configparser.NoSectionError):
     OTHER_TEXTURE = "none"
     DRAW_CIRCLE = 0
 
+if len(RADII) != len(CENTERS):
+    RADII = [1.] * len(CENTERS)
 # converting mode strings to mode ints
 try:
     DISK_TEXTURE_INT = dt_dict[DISK_TEXTURE]
@@ -494,10 +499,10 @@ def sixth(v):
 def RK4f(y,h2=None):
     f = np.zeros(y.shape)
     f[:,0:3] = y[:,3:6]
-    for center in CENTERS:
+    for center, radius in zip(CENTERS,RADII):
         # This is very questionable and probably not how things actually work
         h2 = sqrnorm(np.cross(y[:,0:3] - center,y[:,3:6]))[:,np.newaxis]
-        f[:,3:6] += - 1.5 * h2 * (y[:,0:3] - center) / np.power(sqrnorm(y[:,0:3] - center),2.5)[:,np.newaxis]
+        f[:,3:6] += - 1.5 * h2 * radius * (y[:,0:3] - center) / np.power(sqrnorm(y[:,0:3] - center),2.5)[:,np.newaxis]
 
     return f
 
@@ -747,7 +752,7 @@ def raytrace_schedule(i,schedule,total_shared,q): # this is the function running
             squared_dists = np.einsum('ij,ij->i',dist_vecs,dist_vecs)
             theta = np.arctan2(dist_vecs[:,0], dist_vecs[:,1])
             width = 0.05
-            dash_length = 0.3
+            dash_length = 1
             mask_circle = np.logical_and.reduce([(t > 0),(squared_dists < OTHER_RADIUS * OTHER_RADIUS * (1 + width)),
                                                 (squared_dists > OTHER_RADIUS * OTHER_RADIUS * (1 - width)),
                                                 np.mod(theta, dash_length) < dash_length / 2])
@@ -801,7 +806,7 @@ def raytrace_schedule(i,schedule,total_shared,q): # this is the function running
 
                 point += increment[:,0:3]
 
-            for center in CENTERS:
+            for center, radius in zip(CENTERS,RADII):
                 #useful precalcs
                 pointsqr = sqrnorm(point - center)
                 #phi = np.arctan2(point[:,0],point[:,2])    #too heavy. Better an instance wherever it's needed.
@@ -906,7 +911,7 @@ def raytrace_schedule(i,schedule,total_shared,q): # this is the function running
                 # event horizon
                 oldpointsqr = sqrnorm(oldpoint - center)
 
-                mask_horizon = np.logical_and((pointsqr < 1),(oldpointsqr > 1) )
+                mask_horizon = np.logical_and((pointsqr < radius**2),(oldpointsqr > radius**2) )
 
                 if mask_horizon.any() :
                     if HORIZON_GRID:

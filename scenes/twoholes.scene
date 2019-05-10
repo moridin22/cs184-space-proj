@@ -1,6 +1,6 @@
 [lofi]
 
-Resolution=720,480
+Resolution=480,360
 Iterations=250
 Stepsize=0.08
 
@@ -32,8 +32,9 @@ Blurdo=0
 [bodies]
 
 # Use semicolons to separate the coordinates of each center
-Centers=4.,2.,0.;-5,-1.4,0
+Centers=3,5,2;-2,-4,3
+Radii=1.5,1
 Othercenter=2,-2,0
 Otherradius=1.5
-Othertexture=mars
+Othertexture=none
 Drawcircle=0
