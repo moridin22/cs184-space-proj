@@ -372,7 +372,7 @@ def srgbtorgb(arr):
 
 logger.debug("Loading textures...")
 if SKY_TEXTURE == 'texture':
-    texarr_sky = spm.imread('textures/space2.jpg')
+    texarr_sky = spm.imread('textures/bgedit.jpg')
     # must convert to float here so we can work in linear colour
     texarr_sky = texarr_sky.astype(float)
     texarr_sky /= 255.0
@@ -498,8 +498,7 @@ def sixth(v):
     return tmp*tmp*tmp
 
 
-<<<<<<< HEAD
-def RK4f(y,h2,drag=0):
+def RK4f(y,h2=0,drag=0):
     f = np.zeros(y.shape)
     f[:,0:3] = y[:,3:6]
     for center in CENTERS:
@@ -511,16 +510,6 @@ def RK4f(y,h2,drag=0):
             f[:,3:6] += np.cross(np.array([0,0,drag]), y[:,0:3] - center) / np.power(sqrnorm(y[:,0:3] - center), 2)[:,np.newaxis]
         if dist > 12:
             f[:,3:6] -= np.cross(np.array([0,0,drag]), y[:,0:3] - center) / np.power(sqrnorm(y[:,0:3] - center), 2)[:,np.newaxis]
-=======
-def RK4f(y,h2=None):
-    f = np.zeros(y.shape)
-    f[:,0:3] = y[:,3:6]
-    for center, radius in zip(CENTERS,RADII):
-        # This is very questionable and probably not how things actually work
-        h2 = sqrnorm(np.cross(y[:,0:3] - center,y[:,3:6]))[:,np.newaxis]
-        f[:,3:6] += - 1.5 * h2 * radius * (y[:,0:3] - center) / np.power(sqrnorm(y[:,0:3] - center),2.5)[:,np.newaxis]
-
->>>>>>> e31a05b8847846357fbf9920913d8829b4c9f1bc
     return f
 
 
@@ -815,17 +804,10 @@ def raytrace_schedule(i,schedule,total_shared,q,drag): # this is the function ru
                     y = np.zeros((numChunk,6))
                     y[:,0:3] = point
                     y[:,3:6] = velocity
-<<<<<<< HEAD
-                    k1 = RK4f( y, h2, drag)
-                    k2 = RK4f( y + 0.5*rkstep*k1, h2, drag)
-                    k3 = RK4f( y + 0.5*rkstep*k2, h2, drag)
-                    k4 = RK4f( y +     rkstep*k3, h2, drag)
-=======
-                    k1 = RK4f( y)
-                    k2 = RK4f( y + 0.5*rkstep*k1)
-                    k3 = RK4f( y + 0.5*rkstep*k2)
-                    k4 = RK4f( y +     rkstep*k3)
->>>>>>> e31a05b8847846357fbf9920913d8829b4c9f1bc
+                    k1 = RK4f( y, drag=drag)
+                    k2 = RK4f( y + 0.5*rkstep*k1, drag=drag)
+                    k3 = RK4f( y + 0.5*rkstep*k2, drag=drag)
+                    k4 = RK4f( y +     rkstep*k3, drag=drag)
 
                     increment = rkstep/6. * (k1 + 2*k2 + 2*k3 + k4)
                     
