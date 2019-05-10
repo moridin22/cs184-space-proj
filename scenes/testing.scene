@@ -30,4 +30,4 @@ Blurdo=0
 [bodies]
 
 # Use semicolons to separate the coordinates of each center
-Centers=3.,0.,0.;-3.,0.,0.
+Centers=0.,0.,0.

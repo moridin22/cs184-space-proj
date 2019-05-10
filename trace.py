@@ -445,14 +445,10 @@ def RK4f(y,h2,drag=0):
     f = np.zeros(y.shape)
     f[:,0:3] = y[:,3:6]
     for center in CENTERS:
-        dd = y[:,0:3] - center
-        dist = np.average([np.sqrt(p[0]*p[0] + p[1]*p[1] + p[2]*p[2]) for p in dd])
         h2 = sqrnorm(np.cross(y[:,0:3] - center,y[:,3:6]))[:,np.newaxis]
         f[:,3:6] += - 1.5 * h2 * (y[:,0:3] - center) / np.power(sqrnorm(y[:,0:3] - center),2.5)[:,np.newaxis]
-        if dist > 3 and dist < 12:
+        if drag > 0 or drag < 0:
             f[:,3:6] += np.cross(np.array([0,0,drag]), y[:,0:3] - center) / np.power(sqrnorm(y[:,0:3] - center), 2)[:,np.newaxis]
-        if dist > 12:
-            f[:,3:6] -= np.cross(np.array([0,0,drag]), y[:,0:3] - center) / np.power(sqrnorm(y[:,0:3] - center), 2)[:,np.newaxis]
     return f
 
 
@@ -938,9 +934,9 @@ for i in range(NTHREADS):
     p = multi.Process(target=raytrace_schedule,args=(i,schedules[i],total_colour_buffer_preproc_shared,output.queue, -10))
     process_list.append(p)
 
-# for i in range(NTHREADS):
-#     p = multi.Process(target=raytrace_schedule,args=(i,schedules[i],total_colour_buffer_preproc_shared2,output.queue, 0))
-#     process_list.append(p)
+for i in range(NTHREADS):
+    p = multi.Process(target=raytrace_schedule,args=(i,schedules[i],total_colour_buffer_preproc_shared2,output.queue, 0))
+    process_list.append(p)
 
 logger.debug("Starting threads...")
 
@@ -988,15 +984,13 @@ logger.debug("- gain...")
 total_colour_buffer_preproc *= GAIN
 
 saveToImg(total_colour_buffer_preproc,"tests/1.png")
-# saveToImg(total_colour_buffer_preproc2,"tests/2.png")
+saveToImg(total_colour_buffer_preproc2,"tests/2.png")
 
-# im1 = Image.open("tests/1.png")
-# im2 = Image.open("tests/2.png")
-# im4 = im1.crop((160, 80, 480, 420))
-# im5 = im2.paste(im4, (160, 80, 480, 420))
-# f = open("tests/3.png", "w+")
-# im3 = Image.blend(im1, im2, 100)
-# im2.save("tests/3.png")
+im1 = Image.open("tests/1.png")
+im2 = Image.open("tests/2.png")
+f = open("tests/3.png", "w+")
+im3 = Image.blend(im1, im2, 0.5)
+im3.save("tests/3.png")
 
 # airy bloom
 if AIRY_BLOOM:
