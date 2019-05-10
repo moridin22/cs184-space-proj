@@ -6,6 +6,8 @@ import scipy.ndimage as ndim
 import scipy.misc as spm
 import random,sys,time,os
 import datetime
+import time
+import warnings
 
 import multiprocessing as multi
 import ctypes
@@ -123,7 +125,11 @@ defaults = {
             "sRGBOut":"1",
             "Diskintensitydo":"1",
             "sRGBIn":"1",
-            "Centers":"0.,0.,0."
+            "Centers":"0.,0.,0.",
+    "Othercenter":"0.,0.,0.",
+    "Otherradius":"0.",
+    "Othertexture":"none",
+    "Drawcircle":"0"
             }
 
 cfp = configparser.ConfigParser(defaults)
@@ -160,6 +166,18 @@ dt_dict = {
         "solid":DT_SOLID,
         "grid":DT_GRID,
         "blackbody":DT_BLACKBODY
+    }
+
+OT_NONE = 0
+OT_SUN = 1
+OT_EARTH = 2
+OT_MARS = 3
+
+ot_dict = {
+        "none":OT_NONE,
+        "sun":OT_SUN,
+        "earth":OT_EARTH,
+        "mars":OT_MARS
     }
 
 #this section works, but only if the .scene file is good
@@ -231,8 +249,16 @@ except (KeyError, configparser.NoSectionError):
 
 try:
     CENTERS = [np.array([float (x) for x in center.split(',')]) for center in cfp.get('bodies', 'Centers').split(';')]
+    OTHER_RADIUS = float(cfp.get('bodies','Otherradius'))
+    OTHER_CENTER = np.array([float(x) for x in cfp.get('bodies', 'Othercenter').split(',')])
+    OTHER_TEXTURE = cfp.get('bodies','Othertexture')
+    DRAW_CIRCLE = int(cfp.get('bodies', 'Drawcircle'))
 except (configparser.NoSectionError):
-    CENTERS = [0.0,0.0,0.0]
+    CENTERS = [np.zeros(3)]
+    OTHER_CENTER = np.zeros(3)
+    OTHER_RADIUS = 0.
+    OTHER_TEXTURE = "none"
+    DRAW_CIRCLE = 0
 
 # converting mode strings to mode ints
 try:
@@ -245,6 +271,12 @@ try:
     SKY_TEXTURE_INT = st_dict[SKY_TEXTURE]
 except KeyError:
     logger.debug("Error: %s is not a valid sky rendering mode", SKY_TEXTURE)
+    sys.exit(1)
+
+try:
+    OTHER_TEXTURE_INT = ot_dict[OTHER_TEXTURE]
+except KeyError:
+    logger.debug("Error: %s is not a valid other rendering mode", OTHER_TEXTURE)
     sys.exit(1)
 
 
@@ -360,6 +392,19 @@ if texarr_disk is not None:
     if SRGBIN:
         srgbtorgb(texarr_disk)
 
+texarr_other = None
+if OTHER_TEXTURE == 'sun':
+    texarr_other = spm.imread("textures/sun.jpg")
+elif OTHER_TEXTURE == 'earth':
+    texarr_other = spm.imread("textures/earth.jpg")
+elif OTHER_TEXTURE == 'mars':
+    texarr_other = spm.imread("textures/mars.jpg")
+if texarr_other is not None:
+    texarr_other = texarr_other.astype(float)
+    texarr_other /= 255.0
+    if SRGBIN:
+        srgbtorgb(texarr_other)
+
 
 #defining texture lookup
 def lookup(texarr,uvarrin): #uvarrin is an array of uv coordinates
@@ -426,6 +471,13 @@ def normalize(vec):
     #return vec/ (np.outer(norm(vec),np.array([1.,1.,1.])))
     return vec / (norm(vec)[:,np.newaxis])
 
+def multidot(mat1, mat2):
+    # Viewing the matrices as lists of row vectors, computes [dot(v_i,w_i) for v_i,w_i in zip(mat1, mat2)].
+    return np.einsum('ij,ij->i',mat1, mat2)
+
+def multisqrnorm(mat1):
+    return multidot(mat1, mat1)
+
 # an efficient way of computing the sixth power of r
 # much faster than pow!
 # np has this optimization for power(a,2)
@@ -439,10 +491,11 @@ def sixth(v):
     return tmp*tmp*tmp
 
 
-def RK4f(y,h2):
+def RK4f(y,h2=None):
     f = np.zeros(y.shape)
     f[:,0:3] = y[:,3:6]
     for center in CENTERS:
+        # This is very questionable and probably not how things actually work
         h2 = sqrnorm(np.cross(y[:,0:3] - center,y[:,3:6]))[:,np.newaxis]
         f[:,3:6] += - 1.5 * h2 * (y[:,0:3] - center) / np.power(sqrnorm(y[:,0:3] - center),2.5)[:,np.newaxis]
 
@@ -641,7 +694,6 @@ def raytrace_schedule(i,schedule,total_shared,q): # this is the function running
 
     itcounters[i] = 0
     chnkcounters[i]= 0
-
     for chunk in schedule:
         #if killers[i]:
         #    break
@@ -688,14 +740,23 @@ def raytrace_schedule(i,schedule,total_shared,q): # this is the function running
         object_colour = np.zeros((numChunk,3))
         object_alpha = np.zeros(numChunk)
 
+        # Drawing circle
+        if DRAW_CIRCLE:
+            t = -1 * np.einsum('ij,ij->i',point - OTHER_CENTER, velocity) / np.einsum('ij,ij->i',velocity,velocity)
+            dist_vecs = point + np.einsum('ij,i->ij',velocity,t) - OTHER_CENTER
+            squared_dists = np.einsum('ij,ij->i',dist_vecs,dist_vecs)
+            theta = np.arctan2(dist_vecs[:,0], dist_vecs[:,1])
+            width = 0.05
+            dash_length = 0.3
+            mask_circle = np.logical_and.reduce([(t > 0),(squared_dists < OTHER_RADIUS * OTHER_RADIUS * (1 + width)),
+                                                (squared_dists > OTHER_RADIUS * OTHER_RADIUS * (1 - width)),
+                                                np.mod(theta, dash_length) < dash_length / 2])
+            circle_alpha = mask_circle * 0.3
+            object_colour = blendcolors(np.outer(ones,np.array([0.24,0.59,0.89])), circle_alpha, object_colour, object_alpha)
+            object_alpha = blendalpha(circle_alpha, object_alpha)
         #squared angular momentum per unit mass (in the "Newtonian fantasy")
         #h2 = np.outer(sqrnorm(np.cross(point,velocity)),np.array([1.,1.,1.]))
 
-        com = np.zeros(3)
-        for center in CENTERS:
-            com += center
-        com /= len(CENTERS)
-        h2 = sqrnorm(np.cross(point - com,velocity))[:,np.newaxis]
 
         pointsqr = np.copy(ones3)
 
@@ -729,10 +790,10 @@ def raytrace_schedule(i,schedule,total_shared,q): # this is the function running
                     y = np.zeros((numChunk,6))
                     y[:,0:3] = point
                     y[:,3:6] = velocity
-                    k1 = RK4f( y, h2)
-                    k2 = RK4f( y + 0.5*rkstep*k1, h2)
-                    k3 = RK4f( y + 0.5*rkstep*k2, h2)
-                    k4 = RK4f( y +     rkstep*k3, h2)
+                    k1 = RK4f( y)
+                    k2 = RK4f( y + 0.5*rkstep*k1)
+                    k3 = RK4f( y + 0.5*rkstep*k2)
+                    k4 = RK4f( y +     rkstep*k3)
 
                     increment = rkstep/6. * (k1 + 2*k2 + 2*k3 + k4)
                     
@@ -764,7 +825,7 @@ def raytrace_schedule(i,schedule,total_shared,q): # this is the function running
 
                 if DISK_TEXTURE_INT != DT_NONE:
 
-                    mask_crossing = np.logical_xor( oldpoint[:,1] > 0., point[:,1] > 0.) #whether it just crossed the horizontal plane
+                    mask_crossing = np.logical_xor( oldpoint[:,1] > center[1], point[:,1] > center[1]) #whether it just crossed the horizontal plane
                     mask_distance = np.logical_and((pointsqr < DISKOUTERSQR), (pointsqr > DISKINNERSQR))  #whether it's close enough
 
                     diskmask = np.logical_and(mask_crossing,mask_distance)
@@ -772,13 +833,13 @@ def raytrace_schedule(i,schedule,total_shared,q): # this is the function running
                     if (diskmask.any()):
 
                         #actual collision point by intersection
-                        lambdaa = - point[:,1]/velocity[:,1]
+                        lambdaa = - (point[:,1] - center[1])/velocity[:,1]
                         colpoint = point + lambdaa[:,np.newaxis] * velocity
-                        colpointsqr = sqrnorm(colpoint)
+                        colpointsqr = sqrnorm(colpoint - center)
 
                         if DISK_TEXTURE_INT == DT_GRID:
-                            phi = np.arctan2(colpoint[:,0],point[:,2])
-                            theta = np.arctan2(colpoint[:,1],norm(point[:,[0,2]]))
+                            phi = np.arctan2(colpoint[:,0] - center[0],point[:,2] - center[2])
+                            theta = np.arctan2(colpoint[:,1] - center[1],norm(point[:,[0,2]] - center[[0,2]]))
                             diskcolor =     np.outer(
                                     np.mod(phi,0.52359) < 0.261799,
                                                 np.array([1.,1.,0.])
@@ -792,7 +853,7 @@ def raytrace_schedule(i,schedule,total_shared,q): # this is the function running
 
                         elif DISK_TEXTURE_INT == DT_TEXTURE:
 
-                            phi = np.arctan2(colpoint[:,0],point[:,2])
+                            phi = np.arctan2(colpoint[:,0] - center[0],point[:,2] - center[2])
 
                             uv = np.zeros((numChunk,2))
 
@@ -862,9 +923,59 @@ def raytrace_schedule(i,schedule,total_shared,q): # this is the function running
                     object_colour = blendcolors(horizoncolour,horizonalpha,object_colour,object_alpha)
                     object_alpha = blendalpha(horizonalpha, object_alpha)
 
+            # Rendering other object
+            if OTHER_TEXTURE_INT != OT_NONE:
+                oldpointsqr = sqrnorm(oldpoint - OTHER_CENTER)
+                pointsqr = sqrnorm(point - OTHER_CENTER)
+                mask_other = np.logical_and((pointsqr < OTHER_RADIUS ** 2), (oldpointsqr > OTHER_RADIUS ** 2))
+                if mask_other.any():
+                    lambdaa = ((OTHER_RADIUS - np.sqrt(oldpointsqr)) / (np.sqrt(pointsqr) - np.sqrt(oldpointsqr)))[:, np.newaxis]
+                    colpoint = lambdaa * point + (1 - lambdaa) * oldpoint
+                    phi = np.arctan2(colpoint[:,0] - OTHER_CENTER[0],colpoint[:,2] - OTHER_CENTER[2])
+                    theta = np.arctan2(colpoint[:,1] - OTHER_CENTER[1],norm(colpoint[:,[0,2]] - OTHER_CENTER[[0,2]]))
 
+                    vuv = np.zeros((numChunk, 2))
+                    vuv[:, 0] = np.mod(phi + 4.5, 2 * np.pi) / (2 * np.pi)
+                    vuv[:, 1] = (-theta + np.pi / 2) / (np.pi)
 
-        showprogress("generating sky layer...",i,q)
+                    other_colour = lookup(texarr_other, vuv)[:,0:3]
+
+                    other_alpha = mask_other
+
+                    object_colour = blendcolors(other_colour,other_alpha,object_colour,object_alpha)
+                    object_alpha = blendalpha(other_alpha, object_alpha)
+        if OTHER_TEXTURE_INT != OT_NONE:
+            showprogress("computing final intersections...", i, q)
+
+            # Creating intersection mask
+            t = -1 * np.einsum('ij,ij->i',point - OTHER_CENTER, velocity) / multisqrnorm(velocity)
+            dist_vecs = point + np.einsum('ij,i->ij',velocity,t) - OTHER_CENTER
+            squared_dists = multisqrnorm(dist_vecs)
+            mask_other_end = np.logical_and((t > 0),(squared_dists <= OTHER_RADIUS * OTHER_RADIUS))
+
+            # Calculating actual intersection points
+            a = multidot(velocity, velocity)
+            b = 2 * multidot(point - OTHER_CENTER,velocity)
+            c = multisqrnorm(point - OTHER_CENTER) - OTHER_RADIUS ** 2
+            t = (-b - np.sqrt(b * b - 4 * a * c)) / (2 * a)
+            mask_other_end = np.logical_and(mask_other_end, ~np.isnan(t))
+            t[np.isnan(t)] = 0
+            mask_other_end = np.logical_and(mask_other_end, t >= 0)
+            intersections = point + np.einsum('ij,i->ij',velocity,t) - OTHER_CENTER
+
+            phi = np.arctan2(intersections[:,0],intersections[:,2])
+            theta = np.arctan2(intersections[:,1],norm(intersections[:,[0,2]]))
+            vuv = np.zeros((numChunk, 2))
+            vuv[:, 0] = np.mod(phi + 4.5, 2 * np.pi) / (2 * np.pi)
+            vuv[:, 1] = (theta + np.pi / 2) / (np.pi)
+            other_colour = lookup(texarr_other, vuv)[:, 0:3]
+
+            other_alpha = mask_other_end
+
+            object_colour = blendcolors(other_colour, other_alpha, object_colour, object_alpha)
+            object_alpha = blendalpha(other_alpha, object_alpha)
+
+        showprogress("generating sky layer...", i, q)
 
         vphi = np.arctan2(velocity[:,0],velocity[:,2])
         vtheta = np.arctan2(velocity[:,1],norm(velocity[:,[0,2]]) )
@@ -958,7 +1069,7 @@ except KeyboardInterrupt:
     for i in range(NTHREADS):
         killers[i] = True
     sys.exit()
-
+# time.sleep(10)
 del output
 
 
