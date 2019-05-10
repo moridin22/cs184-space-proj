@@ -12,10 +12,12 @@ Stepsize=0.08
 
 [geometry]
 
-Cameraposition=0.,0.,-13.
+Cameraposition=0.,3.,-13.
 Fieldofview=2.0
 Lookat=0.,0.,0.
 Upvector=-0.,1.,0.
+Diskinner=2.0
+Diskouter=4.
 
 [materials]
 
@@ -30,4 +32,12 @@ Blurdo=0
 [bodies]
 
 # Use semicolons to separate the coordinates of each center
+<<<<<<< HEAD
 Centers=0.,0.,0.
+=======
+Centers=0,0,0
+Othercenter=0.,0.,0.
+Otherradius=1
+Othertexture=none
+Drawcircle=0
+>>>>>>> e31a05b8847846357fbf9920913d8829b4c9f1bc
