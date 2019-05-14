@@ -264,6 +264,7 @@ except (configparser.NoSectionError):
     OTHER_RADIUS = 0.
     OTHER_TEXTURE = "none"
     DRAW_CIRCLE = 0
+    RADII = [1.]
 
 if len(RADII) != len(CENTERS):
     RADII = [1.] * len(CENTERS)
