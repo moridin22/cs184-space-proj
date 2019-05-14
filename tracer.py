@@ -509,8 +509,6 @@ def RK4f(y,h2=0,drag=0):
         f[:,3:6] += - 1.5 * h2 * (y[:,0:3] - center) / np.power(sqrnorm(y[:,0:3] - center),2.5)[:,np.newaxis]
         if dist > 3 and dist < 12:
             f[:,3:6] += np.cross(np.array([0,0,drag]), y[:,0:3] - center) / np.power(sqrnorm(y[:,0:3] - center), 2)[:,np.newaxis]
-        if dist > 12:
-            f[:,3:6] -= np.cross(np.array([0,0,drag]), y[:,0:3] - center) / np.power(sqrnorm(y[:,0:3] - center), 2)[:,np.newaxis]
     return f
 
 
