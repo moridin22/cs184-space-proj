@@ -47,7 +47,19 @@
 
 <h2 align="middle">Gifs</h2>
     <p>
-
+        Originally, a gif generator was not a proposed part of the project. The idea came about as a solution to the problem of rendering a scene from the
+        perspective of a non-stationary observer. After I was unable to implement our initial idea of having an observer moving at relativistic speeds, I still wanted to be able to deliver
+        some version of adding a non-stationary perspective.
+        <br><br>  The .scene files from the original ratonels project have a field that specifies the camera position in Schwarzschild coordinates, and I realized I could specify a new field of the .scene files
+        that gives start and end coordinates for a 'moving' camera. In order to implement the gif maker, I first added parsing for the [gif] section I added to the .scene file's fields. The user can specify start and end positions for the gif as well as the
+        frame rate, number of frames, and file name. The tracer.py script parses these fields, and then gives control to the gif.py script. The function make_gif in gif.py then calls tracer.py with the appropriate arguments to render each frame of the gif. The frames are interpolated between the start and end positions in steps determined by the number of frames. Once
+        all of the frames have rendered, gif.py calls a function of the imageio module in order to stitch the frames into a gif.
+        <br><br>
+        The most difficult part of this implementation was how to control calling tracer.py, as the gif specifications are a section of the .scene file, which is also used to specify parameters of each frame. Since I call tracer.py to render each frame, and each frame is specified by a .scene file, I needed a way of shifting control after having parsed the [gif] section of a scene (without generating new .scene files). I  ended up adding a flag as a program argument
+        in order to specify when frames are being rendered for a gif rather than as one-off renders.
+        <br><br>
+        Working with the existing repo was challenging (especially in this case as it involved advanced physics), and the task of implementing a non-stationary observer was difficult, as the original author did not make design decisions with this in mind. I found the .gif work-around
+        to be satisfying, as it proved to me that I could write a program that interacts with something I did't completely understand and still get interesting results.
     </p>
 
     <div align="center">
@@ -89,7 +101,9 @@
 
     <h3 align="left">Jacob Mimms:</h3>
     <p>
-
+        -made video for milestone submission
+        -implemented gif maker to simulate motion
+        -formatted website
     </p>
 
     <h3 align="left">Elliot Stahnke:</h3>
