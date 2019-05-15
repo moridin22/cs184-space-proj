@@ -14,7 +14,7 @@ def make_gif(FROM, TO, num_frames, framerate, sys_args, filename):
         position = np.array(FROM) + (step_size * int(i))
         position = [float(str.strip(str(x))) for x in position]
         program_arg = "-g" + str(i) + ";" + str(position[0]) + ";" + str(position[1]) + ";" + str(position[2])
-        subprocess.call(["python", "tracer.py", program_arg, str(sys_args[0]), sys_args[1]], stderr=open(os.devnull, 'w'))
+        subprocess.call(["python", "tracer.py", program_arg, str(sys_args[0])], stderr=open(os.devnull, 'w'))
     images = []
     for i in range(0, num_frames):
         images.append(imageio.imread(frames[i]))

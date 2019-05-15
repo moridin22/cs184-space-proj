@@ -6,8 +6,8 @@ Stepsize=0.08
 
 [hifi]
 
-Resolution=640,480
-Iterations=250
+Resolution=810,520
+Iterations=125
 Stepsize=0.08
 
 [geometry]
@@ -28,10 +28,10 @@ Fogmult=0.2
 Blurdo=0
 
 [gif]
-start = 0.,0.,-20.
-end = 0.,0,-10.
-num_frames = 6
-framerate = .1
-filename = pup
+start = -3.,0.,-15.
+end = 3.,0,-8.
+num_frames = 10
+framerate = .15
+filename = high_res
 
 
