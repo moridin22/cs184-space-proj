@@ -37,12 +37,28 @@
         code base would allow us to explore these complexities, and by building up from the starless project by ratonels, we were able to focus on our creative goals. Our modifications enable the user to render multiple black holes of varying radii, render rotating black holes, add nearby celestial objects, and
         generate gifs of black holes as they are seen from varying perspectives.
     </p>
-
-
-<h2 align="middle">Multiple Black Holes</h2>
+    <div align="center">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/J_6UoD-nMWo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+<h2 align="middle">Multiple Black Holes and Celestial Bodies</h2>
     <p>
+        The original renderer only supported one black hole, so a seemingly simple task was adding a second one. This turned out to be more challenging than expected because of the assumptions that the original code made, including assuming that the black hole was always centered at the origin and that its radius was always one. As a result, these values were hard-coded into all of the calculations and it wasn't always clear where to add the new parameters. Additionally, the original renderer used some tricks to find that the trajectory of a photon was given as a solution to a relatively simple system where there was one force pulling the particle to the black hole:<br> <img src="images/simple_force.png" width="480px" /><br>
+        We made the assumption that the trajectories under the influence of two black holes would simply be the result of applying this force once for each black hole. Although this mathematically isn't justified by the original derivation, perceptually it seems to give the right effects. </p>
 
+        <p> We also added in the ability to place other celestial objects in the scene such as a planet or the sun - below is an example of placing Mars between two black holes. This was done using texture maps found online. In order to determine which objects were in front of others, we adapted the original code's method of alpha blending - if a photon hadn't hit an object, it was considered transparent, but if it had, then it was considered opaque and any future collisions would have no effect on the resulting color. In the below image, we can see how the black holes bend the light so that little slivers of Mars appear around the black holes' edges.
     </p>
+
+    <div align="center">
+        <table style="width=100%">
+            <tr>
+                <td align="middle">
+                    <img src="images/image1.png" width="480px" />
+
+                <td align="middle">
+                    <img src="images/image2.png" width="480px" />
+            </tr>
+        </table>
+    </div>
 
 
 <h2 align="middle">Gifs</h2>
@@ -59,7 +75,7 @@
         in order to specify when frames are being rendered for a gif rather than as one-off renders.
         <br><br>
         Working with the existing repo was challenging (especially in this case as it involved advanced physics), and the task of implementing a non-stationary observer was difficult, as the original author did not make design decisions with this in mind. I found the .gif work-around
-        to be satisfying, as it proved to me that I could write a program that interacts with something I did't completely understand and still get interesting results.
+        to be satisfying, as it proved to me that I could write a program that interacts with something I didn't completely understand and still get interesting results.
     </p>
 
     <div align="center">
@@ -110,29 +126,30 @@
         </table>
     </div>
 
-<h2 align="middle">Celestial Bodies</h2>
-    <p>
-
-    </p>
-
 <h2 align="middle">Contributions</h2>
     <h3 align="left">Hung-wei Chuang:</h3>
     <p>
-        -Rotating black hole renders with different backgrounds
+        -Rotating black hole renders with different backgrounds<br>
         -Preliminary renders of moving observers
     </p>
 
     <h3 align="left">Jacob Mimms:</h3>
     <p>
-        -made video for milestone submission
-        -implemented gif maker to simulate motion
+        -made video for milestone submission<br>
+        -implemented gif maker to simulate motion<br>
         -formatted website
     </p>
 
     <h3 align="left">Elliot Stahnke:</h3>
     <p>
-
+        -made final submission video<br>
+        -implemented multiple black holes of different sizes<br>
+        -implemented other celestial bodies
     </p>
-
+<h2 align="middle">References</h2>
+<p>
+Original black hole renderer: http://rantonels.github.io/starless/ <br>
+Texture maps: https://www.solarsystemscope.com/
+</p>
 </body>
 </html>
