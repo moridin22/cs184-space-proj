@@ -7,6 +7,7 @@ import scipy.misc as spm
 import random,sys,time,os
 import datetime
 import time
+from gif import make_gif
 import warnings
 
 import multiprocessing as multi
@@ -52,6 +53,10 @@ SCENE_FNAME = 'scenes/default.scene'
 
 CHUNKSIZE = 9000
 
+GIF_ARGS = 0
+OUT_NAME = "-1"
+OVERRIDE_CAM_POS = 0
+
 for arg in sys.argv[1:]:
     if arg == '-d':
         LOFI = True
@@ -74,6 +79,13 @@ for arg in sys.argv[1:]:
 
     if (arg[0:2] == '-c'):
         CHUNKSIZE = int(arg[2:])
+        continue
+
+    if arg[0:2] == "-g":
+        GIF_ARGS = [x for x in arg[2:].split(';')]
+        OUT_NAME = str(GIF_ARGS[0])
+        OVERRIDE_CAM_POS = list([float(x) for x in GIF_ARGS[1:]])
+        logger.debug("gif args: %s | out_name : %s | CAM POS: %s", GIF_ARGS, OUT_NAME, OVERRIDE_CAM_POS)
         continue
 
     if arg[0:2] == "-j":
@@ -286,6 +298,27 @@ try:
 except KeyError:
     logger.debug("Error: %s is not a valid other rendering mode", OTHER_TEXTURE)
     sys.exit(1)
+
+try:
+    start = [float(x) for x in cfp.get('gif','start').split(',')]
+    end = [float(x) for x in cfp.get('gif','end').split(',')]
+    num_frames = int(cfp.get('gif','num_frames'))
+    filename = str(cfp.get('gif','filename'))
+    framerate = float(cfp.get('gif','framerate'))
+except (configparser.NoSectionError):
+    end = 0;
+    logger.debug("Rendering single image")
+
+if end != 0 and GIF_ARGS == 0: #correctly formatted [movement] field
+    logger.debug("CALLING MAKE GIF")
+    make_gif(start, end, num_frames, framerate, sys.argv[1:], filename)  #giving control to gif.py
+    logger.debug("Exiting...")
+    sys.exit(0)
+
+
+if (type(OVERRIDE_CAM_POS) == list):
+    logger.debug("overwriting camera position, new pos:%s", OVERRIDE_CAM_POS)
+    CAMERA_POS = OVERRIDE_CAM_POS
 
 
 logger.debug("%dx%d", RESOLUTION[0], RESOLUTION[1])
@@ -1193,7 +1226,8 @@ colour = np.clip(colour,0.,1.)
 
 
 logger.debug("Conversion to image and saving...")
-
+if OVERRIDE_CAM_POS != 0:
+    saveToImg(colour,"tests/gifs/" + OUT_NAME + ".png")
 saveToImg(colour,"tests/out.png")
 saveToImg(total_colour_buffer_preproc,"tests/preproc.png")
 if BLURDO:
