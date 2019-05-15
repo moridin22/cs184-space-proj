@@ -33,8 +33,6 @@ Blurdo=0
 
 # Use semicolons to separate the coordinates of each center
 Centers=0.,0.,0.;3.,0.,0.
-=======
-Centers=0,0,0
 Othercenter=0.,0.,0.
 Otherradius=1
 Othertexture=none
